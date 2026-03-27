@@ -1,15 +1,10 @@
-const NYAN_URL = chrome.runtime.getURL("images/nyancat.gif");
-
 function addNyan(scrubber) {
-    if (!scrubber || scrubber.querySelector("img.nyancat")) return;
+    if (!scrubber || scrubber.querySelector("div.nyancat")) return;
 
-    const img = document.createElement("img");
-    img.src = NYAN_URL;
-    img.className = "nyancat";
-    img.style.transform = "rotate(-45deg) translate(-16px, 28px)";
-    img.style.pointerEvents = "none";
+    const nyancat = document.createElement("div");
+    nyancat.className = "nyancat";
 
-    scrubber.appendChild(img);
+    scrubber.appendChild(nyancat);
 }
 
 // wait for the scrubber to spawn in

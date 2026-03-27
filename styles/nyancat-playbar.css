@@ -1,8 +1,40 @@
 @charset "UTF-8";
 
-.nyan-chapter {
-  position: relative;
-  overflow: visible;
+:root {
+  --cat-image: url(chrome-extension://mbeokcgbigffmeigkngpaaongckhoadh/images/nyancat.gif);
+  --sky-image: url(chrome-extension://mbeokcgbigffmeigkngpaaongckhoadh/images/sky.gif);
+  --rainbow-image: url(chrome-extension://mbeokcgbigffmeigkngpaaongckhoadh/images/rainbow_tail.gif);
+  --bar-height: 16px
+}
+
+/* Background sky gif */
+.ytp-progress-bar-container {
+  background-image: var(--sky-image);
+}
+
+/* Rainbow tail gif */
+.nyan-tail {
+  background-image: var(--rainbow-image);
+}
+
+.nyancat {
+  /* Moved here from nyancat.js */
+  transform: rotate(-45deg) translate(-16px, 28px);
+  pointer-events: none;
+
+  background-image: var(--cat-image);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 34px; /* Exact image dimensions */
+  height: 21px;
+}
+
+/* common rules */
+.ytp-progress-bar-container,
+.nyan-tail {
+  background-size: contain;
+  height: var(--bar-height) !important;
+  border-radius: 25px;
 }
 
 .nyan-layer {
@@ -17,24 +49,4 @@
 
   transform: translateY(-50%);
   pointer-events: none;
-}
-
-.nyan-row {
-  display: flex;
-  height: 100%;
-}
-
-.nyan-img {
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.ytp-chapter-hover-container.nyan-first > .nyan-layer > .nyan-row > img:first-child {
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-}
-
-.ytp-chapter-hover-container.nyan-last > .nyan-layer > .nyan-row > img:last-child {
-  border-top-right-radius: 25px;
-  border-bottom-right-radius: 25px;
 }

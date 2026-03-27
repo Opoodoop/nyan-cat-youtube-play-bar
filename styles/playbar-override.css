@@ -4,6 +4,8 @@
 .ytp-hover-progress-light,
 .ytp-hover-progress,
 .ytp-load-progress,
-.ytp-delhi-modern .ytp-progress-list {
-    background: transparent !important;
-} /* we need '!important' to override the styles in the ytp play progress section. */
+.ytp-delhi-modern .ytp-progress-list,
+.ytp-swatch-background-color /* Red corcular progress indicator */
+{
+    background: transparent !important; /* Important forces override of lower prioritized rules*/
+}

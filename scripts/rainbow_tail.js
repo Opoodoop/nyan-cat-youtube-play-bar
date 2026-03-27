@@ -8,51 +8,42 @@ let lastFired = Date.now();
 
 function cleanupNyanChapters() {
   // console.log("nuking everything...");
-  const chapters = document.querySelectorAll('.ytp-chapter-hover-container');
+  const chapter = document.querySelector('.ytp-chapter-hover-container');
+  if (!chapter._initialized) return;
 
-  chapters.forEach(chapter => {
-    if (!chapter._initialized) return;
+  chapter.querySelectorAll('.nyan-layer').forEach(el => el.remove());
+  chapter.classList.remove('nyan-chapter', 'nyan-first', 'nyan-last');
 
-    chapter.querySelectorAll('.nyan-layer').forEach(el => el.remove());
-    chapter.classList.remove('nyan-chapter', 'nyan-first', 'nyan-last');
-
-    delete chapter._initialized;
-    delete chapter._fg;
-    delete chapter._width;
-    delete chapter._marginRight;
-  });
+  delete chapter._initialized;
+  delete chapter._fg;
+  delete chapter._width;
+  delete chapter._marginRight;
 }
 
-function fillChaptersByScrubber() {
-  const chapters = Array.from(
-    document.querySelectorAll('.ytp-chapter-hover-container')
-  );
-  if (!chapters.length) return;
+function updateTailLength() {
+  const tail = document.querySelector('.ytp-chapter-hover-container')
+  if (!tail) return;
 
-  if (!chapters[0]._initialized) {
+  if (!tail._initialized) {
     rebuildNyan();
     return;
   }
 
+  remaining = getScrubberProgress()
+
+  const fill = Math.min(tail._width, remaining);
+  tail._fg.style.width = fill + 'px';
+}
+
+function getScrubberProgress() {
   const scrubber = document.querySelector('.ytp-scrubber-container');
   if (!scrubber) return;
 
+  /* Extract progress from scrubber */
   const match = scrubber.style.transform.match(/translateX\(([\d.]+)px\)/);
   if (!match) return;
 
-  let remaining = parseFloat(match[1]);
-
-  for (const chapter of chapters) {
-    if (remaining <= 0) {
-      chapter._fg.style.width = '0px';
-      continue;
-    }
-
-    const fill = Math.min(chapter._width, remaining);
-    chapter._fg.style.width = fill + 'px';
-
-    remaining -= chapter._width + chapter._marginRight;
-  }
+  return Math.max(0, parseFloat(match[1])); /* Ensure progress is always positive*/
 }
 
 function rebuildNyan() {
@@ -64,61 +55,22 @@ function rebuildNyan() {
   
   cleanupNyanChapters();
   initializeChapters();
-  fillChaptersByScrubber();
+  updateTailLength();
 }
 
 function initializeChapters() {
-  const chapters = Array.from(
-    document.querySelectorAll('.ytp-chapter-hover-container')
-  );
-  if (!chapters.length) return;
+  const chapter = document.querySelector('.ytp-chapter-hover-container')
+  if (!chapter) return;
 
-  const REVEALED_SRC = chrome.runtime.getURL("images/rainbow_tail.gif");
-  const UNREVEALED_SRC = chrome.runtime.getURL("images/sky.gif");
-  const IMAGE_HEIGHT = 16;
+  const fg = document.createElement('div');
+  fg.className = 'nyan-layer nyan-tail';
+  chapter.appendChild(fg);
 
-  chapters.forEach((chapter, index) => {
-    chapter.classList.add('nyan-chapter');
-
-    if (index === 0) chapter.classList.add('nyan-first');
-    if (index === chapters.length - 1) chapter.classList.add('nyan-last');
-
-    const bg = document.createElement('div');
-    const fg = document.createElement('div');
-    const bgRow = document.createElement('div');
-    const fgRow = document.createElement('div');
-
-    bg.className = 'nyan-layer';
-    fg.className = 'nyan-layer';
-    bgRow.className = 'nyan-row';
-    fgRow.className = 'nyan-row';
-
-    const width = chapter.clientWidth;
-    const count = Math.ceil(width / IMAGE_HEIGHT);
-
-    for (let i = 0; i < count; i++) {
-      const bgImg = new Image();
-      bgImg.src = UNREVEALED_SRC;
-      bgImg.className = 'nyan-img';
-      bgRow.appendChild(bgImg);
-
-      const fgImg = new Image();
-      fgImg.src = REVEALED_SRC;
-      fgImg.className = 'nyan-img';
-      fgRow.appendChild(fgImg);
-    }
-
-    bg.appendChild(bgRow);
-    fg.appendChild(fgRow);
-    chapter.appendChild(bg);
-    chapter.appendChild(fg);
-
-    chapter._fg = fg;
-    chapter._initialized = true;
-    chapter._width = chapter.clientWidth;
-    const style = getComputedStyle(chapter);
-    chapter._marginRight = parseFloat(style.marginRight) || 0;
-  });
+  chapter._fg = fg;
+  chapter._initialized = true;
+  chapter._width = chapter.clientWidth;
+  const style = getComputedStyle(chapter);
+  chapter._marginRight = parseFloat(style.marginRight) || 0;
 }
 
 function rebindScrubberObserver() {
@@ -131,7 +83,7 @@ function observeScrubber() {
   const scrubber = document.querySelector('.ytp-scrubber-container');
   if (!scrubber) return;
 
-  scrubberObserver = new MutationObserver(fillChaptersByScrubber);
+  scrubberObserver = new MutationObserver(updateTailLength);
   scrubberObserver.observe(scrubber, {
     attributes: true,
     attributeFilter: ['style']
