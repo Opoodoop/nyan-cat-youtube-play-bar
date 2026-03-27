@@ -6,7 +6,7 @@ function addNyan(scrubber) {
     const img = document.createElement("img");
     img.src = NYAN_URL;
     img.className = "nyancat";
-    img.style.transform = "rotate(-45deg) translate(-16px, 24px)";
+    img.style.transform = "rotate(-45deg) translate(-16px, 28px)";
     img.style.pointerEvents = "none";
 
     scrubber.appendChild(img);
