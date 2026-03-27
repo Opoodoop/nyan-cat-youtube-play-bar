@@ -1,21 +1,9 @@
 @charset "UTF-8";
 
-.ytp-play-progress {
-    background: transparent !important;
-} /* we need '!important' to override the styles in the ytp play progress section. */
-
-.ytp-hover-progress-light {
-    background: transparent !important;
-}
-
-.ytp-hover-progress {
-    background: transparent !important;
-}
-
-.ytp-load-progress {
-    background: transparent !important;
-}
-
+.ytp-play-progress,
+.ytp-hover-progress-light,
+.ytp-hover-progress,
+.ytp-load-progress,
 .ytp-delhi-modern .ytp-progress-list {
     background: transparent !important;
-}
+} /* we need '!important' to override the styles in the ytp play progress section. */
